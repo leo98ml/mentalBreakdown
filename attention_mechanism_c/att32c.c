@@ -562,13 +562,14 @@ int main(int argc, char** argv) {
 	}
 	int a,b;
 	MATRIX m=load_data("test_2048_48_32.os", &a, &b);
-	for(int i=0; i<a; i++){
-		int j=0;
-		for(j=0; j<b-1; j++)
-			printf("%f,", m[b*i+j]);
-		printf("%f\n", m[b*i+j]);
+	if(input->display){
+		for(int i=0; i<a; i++){
+			int j=0;
+			for(j=0; j<b-1; j++)
+				printf("%f,", m[b*i+j]);
+			printf("%f\n", m[b*i+j]);
+		}
 	}
-	printf("]\n");
 	if(!input->silent)
 		printf("\nDone.\n");
 
