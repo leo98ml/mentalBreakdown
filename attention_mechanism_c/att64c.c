@@ -217,9 +217,11 @@ MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m,MATRIX m2,int row, int
 void function_f(MATRIX m, int dimension){
 	for (int i=0; i<dimension; i++){
 		for (int j=0; j<dimension; j++){
+			type x = m[i * dimension + j];
 			type s = 1;
-			if (m [i*dimension+j] <0) s=-1;
-			m [i*dimension+j] = s * (((type)-1)/(m [i*dimension+j] +2) + 0.5) + 0.5;
+			if (x < 0)
+				s = -1;
+			m[i * dimension + j] = s*( 0.5-(1.0) / (x + 2.0)) + 0.5;
 		}
 	}
 }
@@ -230,6 +232,15 @@ void write_out(MATRIX dest, MATRIX src, int src_row, int src_col, int dest_start
 			dest[dest_starting_point + i*src_col+j]=src[i*src_col+j];
 		}
 	}
+}
+
+
+type compare(MATRIX m1, MATRIX m2, int r, int c){
+	type ret = 0;
+	for (int i=0; i<r*c; i++){
+		ret+=((type)fabs(m1[i]-m2[i]))/((type)r*c);
+	}
+	return ret;
 }
 void att(params* input){
 	// -------------------------------------------------
@@ -560,6 +571,12 @@ int main(int argc, char** argv) {
 	}
 	int a,b;
 	MATRIX m=load_data("test_2048_48_64.os", &a, &b);
+
+
+	
+	type differenza_media = compare(input->out, m, input->N, input->nn);
+	if (input->display)
+		printf("\nDone. Differenza media -> %f\n",differenza_media);
 	if(input->display){
 		for(int i=0; i<a; i++){
 			int j=0;
