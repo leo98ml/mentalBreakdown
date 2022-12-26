@@ -201,9 +201,9 @@ void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest)
 		}
 	}
 }
-MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2)
+MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret )
 {
-	MATRIX ret = alloc_matrix(row, col2);
+	// MATRIX ret = alloc_matrix(row, col2);
 	for (int i = 0; i < row; i++)
 	{
 		for (int j = 0; j < col2; j++)
@@ -218,9 +218,9 @@ MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2)
 	return ret;
 }
 
-MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, int col, int col2, type scalar)
+MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, int col, int col2, type scalar, MATRIX ret)
 {
-	MATRIX ret = alloc_matrix(row, col2);
+	// MATRIX ret = alloc_matrix(row, col2);
 	for (int i = 0; i < row; i++)
 	{
 		for (int j = 0; j < col2; j++)
@@ -261,7 +261,7 @@ void write_out(MATRIX dest, MATRIX src, int src_row, int src_col, int dest_start
 	}
 }
 
-type compare(MATRIX m1, MATRIX m2, int r, int c){
+type compare(MATRIX m1, MATRIX m2, int r, int c){//?
 	type ret = 0;
 	for (int i=0; i<r*c; i++){
 		ret+=((type)fabs(m1[i]-m2[i]))/((type)r*c);
@@ -275,20 +275,27 @@ void att(params *input)
 	// -------------------------------------------------
 
 	type sqrt_d = sqrtf(input->d);
-	MATRIX Q = alloc_matrix(input->n, input->nn);
-	MATRIX K = alloc_matrix(input->n, input->nn);
-	MATRIX V = alloc_matrix(input->n, input->nn);
+	int biggest_dimension = input->n;
+	if (input->nn>biggest_dimension) biggest_dimension = input->nn;
+	if (input->d>biggest_dimension) biggest_dimension = input->d;
+	//MATRIX Q = alloc_matrix(input->n, input->nn);
+	//MATRIX K = alloc_matrix(input->n, input->nn);
+	//MATRIX V = alloc_matrix(input->n, input->nn);
+	MATRIX Q = alloc_matrix(biggest_dimension, biggest_dimension);
+	MATRIX K = alloc_matrix(biggest_dimension, biggest_dimension);
+	MATRIX V = alloc_matrix(biggest_dimension, biggest_dimension);
+
 	for (int i_tensore = 0; i_tensore < input->ns; i_tensore++)
 	{
 		for (int i = 0; i < input->s; i++)
 		{
-			MATRIX S_i = &(input->ds[i_tensore * input->s * input->n * input->d + input->n * input->d * i]);
-			sum_matrix_vector(mul_matrix(S_i, input->wq, input->n, input->d, input->nn), input->bq, input->n, input->nn, Q); // n*nn -> dim(Q)
-			sum_matrix_vector(mul_matrix(S_i, input->wk, input->n, input->d, input->nn), input->bk, input->n, input->nn, K);
-			sum_matrix_vector(mul_matrix(S_i, input->wv, input->n, input->d, input->nn), input->bv, input->n, input->nn, V);
-			MATRIX S_1 = mul_matrix_transpose_and_divide_by_scalar(Q, K, input->n, input->nn, input->n, sqrt_d);
+			MATRIX S_i = &(input->ds[i_tensore * input->s * input->n * input->d + input->n * input->d * i]);//S_i have dimension n*d
+			sum_matrix_vector(mul_matrix(S_i, input->wq, input->n, input->d, input->nn,Q), input->bq, input->n, input->nn, Q); // n*nn -> dim(Q)
+			sum_matrix_vector(mul_matrix(S_i, input->wk, input->n, input->d, input->nn,K), input->bk, input->n, input->nn, K);
+			MATRIX S_1 = mul_matrix_transpose_and_divide_by_scalar(Q, K, input->n, input->nn, input->n, sqrt_d,V);
 			function_f(S_1, input->n);
-			write_out(input->out, mul_matrix(S_1, V, input->n, input->n, input->nn), input->n, input->nn, i_tensore * input->s * input->n * input->nn + input->n * input->nn * i);
+			sum_matrix_vector(mul_matrix(S_i, input->wv, input->n, input->d, input->nn,K), input->bv, input->n, input->nn, K);//now K is virtually V
+			write_out(input->out, mul_matrix(S_1, K, input->n, input->n, input->nn,Q), input->n, input->nn, i_tensore * input->s * input->n * input->nn + input->n * input->nn * i);
 		}
 	}
 }
