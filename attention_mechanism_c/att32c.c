@@ -275,24 +275,10 @@ void att(params *input)
 	// -------------------------------------------------
 
 	type sqrt_d = sqrtf(input->d);
-	int biggest_dimension = input->n;
-	if (input->nn>biggest_dimension) biggest_dimension = input->nn;
-	//MATRIX Q = alloc_matrix(input->n, input->nn);
-	//MATRIX K = alloc_matrix(input->n, input->nn);
-	//MATRIX V = alloc_matrix(input->n, input->nn);
-	MATRIX Q = alloc_matrix(biggest_dimension, biggest_dimension);
-	MATRIX K = alloc_matrix(biggest_dimension, biggest_dimension);
-	MATRIX V = alloc_matrix(biggest_dimension, biggest_dimension);
+	MATRIX Q = alloc_matrix(input->n, input->nn);
+	MATRIX K = alloc_matrix(input->n, input->nn);
+	MATRIX V = alloc_matrix(input->n, input->nn);
 	MATRIX tmp = alloc_matrix(input->n, input->n);
-
-	/*
-	sum_matrix_vector(mul_matrix(S_i, input->wq, input->n, input->d, input->nn), input->bq, input->n, input->nn, Q); // n*nn -> dim(Q)
-	sum_matrix_vector(mul_matrix(S_i, input->wk, input->n, input->d, input->nn), input->bk, input->n, input->nn, K);
-	sum_matrix_vector(mul_matrix(S_i, input->wv, input->n, input->d, input->nn), input->bv, input->n, input->nn, V);
-	MATRIX S_1 = mul_matrix_transpose_and_divide_by_scalar(Q, K, input->n, input->nn, input->n, sqrt_d);
-	function_f(S_1, input->n);
-	write_out(input->out, mul_matrix(S_1, V, input->n, input->n, input->nn), input->n, input->nn, i_tensore * input->s * input->n * input->nn + input->n * input->nn * i);
-	*/
 	for (int i_tensore = 0; i_tensore < input->ns; i_tensore++)
 	{
 		for (int i = 0; i < input->s; i++)

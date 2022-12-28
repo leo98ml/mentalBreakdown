@@ -180,86 +180,105 @@ void save_data(char* filename, void* X, int n, int k) {
 
 extern void prova(params* input);
 
-void sum_matrix_vector(MATRIX m,VECTOR v, int row, int col, MATRIX dest){
-	for (int i =0; i< row; i++) {
-		for (int j = 0; j< col; j++){
-			dest[i*col+j]=m[i*col+j]+v[j];
+void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest)
+{
+	for (int i = 0; i < row; i++)
+	{
+		for (int j = 0; j < col; j++)
+		{
+			dest[i * col + j] = m[i * col + j] + v[j];
 		}
 	}
 }
-MATRIX mul_matrix(MATRIX m,MATRIX m2,int row, int col,int col2) {
-	MATRIX ret = alloc_matrix(row,col2);
-	for (int i=0; i<row; i++){
-		for (int j=0; j<col2; j++){
-			ret [i*col2+j] = 0;
-			for (int k=0; k<col; k++){
-				ret [i*col2+j] +=(m[i*col + k]*m2[k*col2+j]);
+MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret )
+{
+	// MATRIX ret = alloc_matrix(row, col2);
+	for (int i = 0; i < row; i++)
+	{
+		for (int j = 0; j < col2; j++)
+		{
+			ret[i * col2 + j] = 0;
+			for (int k = 0; k < col; k++)
+			{
+				ret[i * col2 + j] += (m[i * col + k] * m2[k * col2 + j]);
 			}
 		}
 	}
 	return ret;
 }
 
-
-MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m,MATRIX m2,int row, int col,int col2, type scalar) {
-	MATRIX ret = alloc_matrix(row,col2);
-	for (int i=0; i<row; i++){
-		for (int j=0; j<col2; j++){
-			ret [i*col2+j] = 0;
-			for (int k=0; k<col; k++){
-				ret [i*col2+j] +=(type) (m[i*col+k]*m2[j*col2+k]/scalar);
+MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, int col, int col2, type scalar, MATRIX ret)
+{
+	// MATRIX ret = alloc_matrix(row, col2);
+	for (int i = 0; i < row; i++)
+	{
+		for (int j = 0; j < col2; j++)
+		{
+			ret[i * col2 + j] = 0;
+			for (int k = 0; k < col; k++)
+			{
+				ret[i * col2 + j] += (type)(m[i * col + k] * m2[j * col2 + k] / scalar);
 			}
 		}
 	}
 	return ret;
 }
 
-void function_f(MATRIX m, int dimension){
-	for (int i=0; i<dimension; i++){
-		for (int j=0; j<dimension; j++){
+void function_f(MATRIX m, int dimension)
+{
+	for (int i = 0; i < dimension; i++)
+	{
+		for (int j = 0; j < dimension; j++)
+		{
 			type x = m[i * dimension + j];
 			type s = 1;
 			if (x < 0)
 				s = -1;
-			m[i * dimension + j] = s*( 0.5-(1.0) / (x + 2.0)) + 0.5;
+			m[i * dimension + j] = s*( 0.5f-(1.0f) / (x + 2.0f)) + 0.5f;
 		}
 	}
 }
 
-void write_out(MATRIX dest, MATRIX src, int src_row, int src_col, int dest_starting_point){
-	for (int i = 0; i< src_row;i++){
-		for (int j=0;j< src_col; j++){
-			dest[dest_starting_point + i*src_col+j]=src[i*src_col+j];
+void write_out(MATRIX dest, MATRIX src, int src_row, int src_col, int dest_starting_point)
+{
+	for (int i = 0; i < src_row; i++)
+	{
+		for (int j = 0; j < src_col; j++)
+		{
+			dest[dest_starting_point + i * src_col + j] = src[i * src_col + j];
 		}
 	}
 }
 
-
-type compare(MATRIX m1, MATRIX m2, int r, int c){
+type compare(MATRIX m1, MATRIX m2, int r, int c){//?
 	type ret = 0;
 	for (int i=0; i<r*c; i++){
 		ret+=((type)fabs(m1[i]-m2[i]))/((type)r*c);
 	}
 	return ret;
 }
-void att(params* input){
+void att(params *input)
+{
 	// -------------------------------------------------
 	// Codificare qui l'algoritmo Attention mechanism
 	// -------------------------------------------------
 
 	type sqrt_d = sqrt(input->d);
-	MATRIX Q = alloc_matrix(input->n,input->nn);
-	MATRIX K = alloc_matrix(input->n,input->nn);
-	MATRIX V = alloc_matrix(input->n,input->nn);
-	for (int i_tensore = 0; i_tensore < input->ns; i_tensore++){
-		for (int i = 0; i < input->s; i++ ) {
-			MATRIX S_i = &(input->ds[i_tensore*input->s*input->n*input->d+input->n*input->d*i]);
-			sum_matrix_vector(mul_matrix(S_i,input->wq,input->n,input->d,input->nn),input->bq,input->n,input->nn,Q);//n*nn -> dim(Q)
-			sum_matrix_vector(mul_matrix(S_i,input->wk,input->n,input->d,input->nn),input->bk,input->n,input->nn,K);
-			sum_matrix_vector(mul_matrix(S_i,input->wv,input->n,input->d,input->nn),input->bv,input->n,input->nn,V);
-			MATRIX S_1 = mul_matrix_transpose_and_divide_by_scalar(Q,K,input->n,input->nn,input->n,sqrt_d);
-			function_f(S_1,input->n);
-			write_out(input -> out, mul_matrix(S_1,V,input->n,input->n,input->nn),input->n,input->nn,i_tensore*input->s*input->n*input->nn+input->n*input->nn*i);
+	MATRIX Q = alloc_matrix(input->n, input->nn);
+	MATRIX K = alloc_matrix(input->n, input->nn);
+	MATRIX V = alloc_matrix(input->n, input->nn);
+	MATRIX tmp = alloc_matrix(input->n, input->n);
+	for (int i_tensore = 0; i_tensore < input->ns; i_tensore++)
+	{
+		for (int i = 0; i < input->s; i++)
+		{
+			MATRIX S_i = &(input->ds[i_tensore * input->s * input->n * input->d + input->n * input->d * i]);//S_i has dimension n*d
+			sum_matrix_vector(mul_matrix(S_i, input->wq, input->n, input->d, input->nn,Q), input->bq, input->n, input->nn, Q); // n*nn -> dim(Q)
+			sum_matrix_vector(mul_matrix(S_i, input->wk, input->n, input->d, input->nn,K), input->bk, input->n, input->nn, K);
+			sum_matrix_vector(mul_matrix(S_i, input->wv, input->n, input->d, input->nn,V), input->bv, input->n, input->nn, V);
+			MATRIX S_1 = mul_matrix_transpose_and_divide_by_scalar(Q, K, input->n, input->nn, input->n, sqrt_d,tmp);
+			function_f(S_1, input->n);
+			write_out(input->out, mul_matrix(S_1, V, input->n, input->n, input->nn,Q), input->n, input->nn, i_tensore * input->s * input->n * input->nn + input->n * input->nn * i);
 		}
 	}
 }
