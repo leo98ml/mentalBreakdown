@@ -189,7 +189,7 @@ void save_data(char *filename, void *X, int n, int k)
 
 // PROCEDURE ASSEMBLY
 
-extern void prova(params *input);
+extern MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret );
 
 void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest)
 {
@@ -201,6 +201,7 @@ void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest)
 		}
 	}
 }
+/*
 MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret )
 {
 	// MATRIX ret = alloc_matrix(row, col2);
@@ -216,7 +217,7 @@ MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret )
 		}
 	}
 	return ret;
-}
+}*/
 
 MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, int col, int col2, type scalar, MATRIX ret)
 {
@@ -614,7 +615,7 @@ int main(int argc, char **argv)
 	}
 
 	// COMMENTARE QUESTA RIGA!
-	// prova(input);
+	//prova(input);
 	//
 
 	//
@@ -657,8 +658,9 @@ int main(int argc, char **argv)
 	MATRIX m = load_data("test_2048_48_32.os", &a, &b);
 	
 	type differenza_media = compare(input->out, m, input->N, input->nn);
-	if (input->display)
+	if (input->display){
 		printf("\nDone. Differenza media -> %f\n",differenza_media);
+	}
 	if (input->display)
 	{
 		for (int i = 0; i < a; i++)

@@ -1,5 +1,5 @@
 to run 32:
-
+gcc -m32 -msse -O0 -no-pie sseutils32.o att32.o att32c.c -o testLeo -lm
 gcc -m32 att32c.c -o testLeo -lm
 ./testLeo -ds test_2048_48_32.ds -wq test_48_32_32.wq -wk test_48_32_32.wk -wv test_48_32_32.wv -bq test_32_32.bq -bk test_32_32.bk -bv test_32_32.bv -si 8 -n 64 -d > try-txt
 
@@ -14,3 +14,18 @@ gcc att64c.c -o testLeo64 -lm
 
 gcc att64c_openMP.c -o testLeo64OMP -lm -fopenmp
 ./testLeo64OMP -ds test_2048_48_64.ds -wq test_48_32_64.wq -wk test_48_32_64.wk -wv test_48_32_64.wv -bq test_32_64.bq -bk test_32_64.bk -bv test_32_64.bv -si 8 -n 64 -d > try-txt.64OMP
+
+
+ gcc -m32 -Wall att32c.c print_string -o testLeo -lm
+ gcc -m32 -Wall test.c print_string -o testLeo -lm
+
+nasm -f elf32 -o print_string.o print_string.nasm; ld -m elf_i386 -o print_string print_string.o -lc; gcc -m32 -Wall test.c; ./testLeo
+
+gcc -m32 -msse -O0 -no-pie sseutils32.o att32.o att32c.c -o att32c -lm
+
+
+
+EXP ASSEMBLY 32BIT
+nasm -f elf32 mulmatrix_callable.nasm 
+gcc -m32 -msse -O0 -no-pie sseutils32.o mulmatrix_callable.o att32c.c -o testLeo -lm
+./testLeo -ds test_2048_48_32.ds -wq test_48_32_32.wq -wk test_48_32_32.wk -wv test_48_32_32.wv -bq test_32_32.bq -bk test_32_32.bk -bv test_32_32.bv -si 8 -n 64 -d > try-txt
