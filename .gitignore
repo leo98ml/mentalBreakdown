@@ -12,3 +12,5 @@ attention_mechanism_c/mulmatrixtrasposta.o
 attention_mechanism_c/mulmatrix.o
 attention_mechanism_c/mulmatrix_callable.o
 attention_mechanism_c/sseutils32.o
+attention_mechanism_c/salvatore.txt
+attention_mechanism_c/testSalva

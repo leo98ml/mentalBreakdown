@@ -6,9 +6,9 @@ section .data            ; Sezione contenente dati inizializzati
 
  
 
-row      equ          1024
-col	 equ 	      1024
-col2	 equ	     1024
+row      equ          8
+col	 equ 	      8
+col2	 equ	      8
 
 
  
@@ -20,10 +20,10 @@ col2	 equ	     1024
  
 
 align 16
-inizio:        dd        0.0, 0.0, 0.0, 1.0
+inizio:        dd        1.0, 1.0, 1.0, 1.0
 
 align 16
-inizio1:        dd        1.0, 0.0, 0.0, 0.0
+inizio1:        dd        1.0, 1.0, 1.0, 1.0
 
  
 
@@ -138,7 +138,7 @@ fork:	imul esi,eax,col2*4		;
 	
         add ecx,4			;
         cmp ecx,col			;
-        jb fork			;
+leo:        jb fork			;
         
          addps xmm3,xmm4
          addps xmm3,xmm5

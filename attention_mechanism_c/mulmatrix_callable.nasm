@@ -11,15 +11,12 @@ section .bss			; Sezione contenente dati non inizializzati
     alignb 16
     C:        resd    1
     alignb 16
-    row      resd     1
+    row:      resd     1
     alignb 16
-    col	    resd 	  1
+    col:	    resd 	  1
     alignb 16
-    col2	 resd	  1
+    col2:	 resd	  1
     alignb 16
-    col_4	 resd	  1
-    alignb 16
-    col2_4	 resd	  1
 
 section .text			; Sezione contenente il codice macchina
 
@@ -47,7 +44,7 @@ extern free_block
 
 global mul_matrix
 
-input		equ		16
+input		equ		8
 msg	db	'BANANA',32,0
 nl	db	10,0
 mul_matrix:
@@ -65,32 +62,28 @@ mul_matrix:
         
 		prints msg            
 		prints nl
-		mov EAX, [EBP+input]	
+        xor eax, eax
+        add eax, input
+        add eax,EBP
 		MOV EBX, [EAX]	
-		MOV [C], EBX		
+		MOV [A], EBX		
 		MOV EBX, [EAX+4]	
-		MOV [col2], EBX		
+		MOV [B], EBX		
 		MOV EBX, [EAX+8]	
-		MOV [col], EBX		
+		MOV [row], EBX		
 		MOV EBX, [EAX+12]	
-		MOV [row], EBX			
+		MOV [col], EBX			
 		MOV EBX, [EAX+16]	
-		MOV [B], EBX				
+		MOV [col2], EBX				
 		MOV EBX, [EAX+20]	
-		MOV [A], EBX
+		MOV [C], EBX
 
-
-		MOV EBX, col*4
-        MOV [col_4],EBX
-		MOV EBX, col2*4
-        MOV [col2_4],EBX
-        
         mov eax,0			;i=0
 fori:	mov	ebx,0			;j=0
-forj:	imul edi, eax, col_4;
+forj:	imul edi, eax, col*4;
 	    xorps xmm3,xmm3
 	    mov ecx,0			;k=0
-fork:	imul esi,eax,col2_4		;
+fork:	imul esi,eax,col2*4		;
         movaps xmm2,[A+edi+ecx*4]
         shufps xmm2,xmm2,0h
         movaps xmm1,[B+esi+ebx*4]
