@@ -17,6 +17,10 @@ section .bss			; Sezione contenente dati non inizializzati
     alignb 16
     col2:	 resd	  1
     alignb 16
+    col_4:	    resd 	  1
+    alignb 16
+    col2_4:	 resd	  1
+    alignb 16
 
 section .text			; Sezione contenente il codice macchina
 
@@ -45,8 +49,6 @@ extern free_block
 global mul_matrix
 
 input		equ		8
-msg	db	'BANANA',32,0
-nl	db	10,0
 mul_matrix:
 		; ------------------------------------------------------------
 		; Sequenza di ingresso nella funzione
@@ -59,9 +61,6 @@ mul_matrix:
 		; ------------------------------------------------------------
 		; legge i parametri dal Record di Attivazione corrente
 		; ------------------------------------------------------------
-        
-		prints msg            
-		prints nl
         xor eax, eax
         add eax, input
         add eax,EBP
@@ -77,70 +76,88 @@ mul_matrix:
 		MOV [col2], EBX				
 		MOV EBX, [EAX+20]	
 		MOV [C], EBX
-
+        mov eax,[col]
+        shl eax,2
+        mov [col_4],eax
+        mov eax,[col2]
+        shl eax,2
+        mov [col2_4],eax
         mov eax,0			;i=0
 fori:	mov	ebx,0			;j=0
-forj:	imul edi, eax, col*4;
+forj:	mov edi, eax
+        imul edi,[col_4]
 	    xorps xmm3,xmm3
-	    mov ecx,0			;k=0
-fork:	imul esi,eax,col2*4		;
-        movaps xmm2,[A+edi+ecx*4]
+	    mov ecx,0			;k
+fork:	mov esi, ecx
+        imul esi,[col2_4]
+        add edi,[A]
+        movaps xmm2,[edi+ecx*4]
+        sub edi,[A]
         shufps xmm2,xmm2,0h
-        movaps xmm1,[B+esi+ebx*4]
+        add esi,[B]
+        movaps xmm1,[esi+ebx*4]
+        sub esi,[B]
         mulps  xmm1,xmm2
         addps xmm4,xmm1
-        
-        movaps xmm2,[A+edi+ecx*4]
+        add edi,[A]
+        movaps xmm2,[edi+ecx*4]
+        sub edi,[A]
         shufps xmm2,xmm2,55h
-        movaps xmm1,[B+esi+ebx*4]
+        add esi,[B]
+        movaps xmm1,[esi+ebx*4]
+        sub esi,[B]
         mulps  xmm1,xmm2
         addps xmm5,xmm1
-        
-        movaps xmm2,[A+edi+ecx*4]
-        shufps xmm2,xmm2,39h	;
-        shufps xmm2,xmm2,55h	;
-        movaps xmm1,[B+esi+ebx*4]
+        add edi, [A]
+        movaps xmm2,[edi+ecx*4]
+        sub edi, [A]
+        shufps xmm2,xmm2,39h	
+        shufps xmm2,xmm2,55h	
+        add esi,[B]
+        movaps xmm1,[esi+ebx*4]
+        sub esi,[B]
         mulps  xmm1,xmm2
         addps xmm6,xmm1
-        
-        movaps xmm2,[A+edi+ecx*4]
-        shufps xmm2,xmm2,93h	;
-        shufps xmm2,xmm2,00h	;
-        movaps xmm1,[B+esi+ebx*4]
+        add edi,[A]
+        movaps xmm2,[edi+ecx*4]
+        sub edi,[A]
+        shufps xmm2,xmm2,93h	
+        shufps xmm2,xmm2,00h	
+        add esi,[B]
+        movaps xmm1,[esi+ebx*4]
+        sub esi,[B]
         mulps  xmm1,xmm2
         addps xmm7,xmm1
-
-        add ecx,4			;
-        cmp ecx,col			;
-        jb fork			;
-
+        add ecx,4			
+        cmp ecx,[col]			
+        jb fork			
         addps xmm3,xmm4
         addps xmm3,xmm5
         addps xmm3,xmm6
         addps xmm3,xmm7
-
         xorps xmm4,xmm4
         xorps xmm5,xmm5
         xorps xmm6,xmm6
         xorps xmm7,xmm7
-        movaps [C+esi+ebx*4],xmm3
-
-        add ebx,4			;
-        cmp ebx,col2			;
-        jb forj			;
-
-        add eax,1			;
-        cmp eax,row			;
-        jb fori			;
-        mov eax,row
+        mov edx,eax
+        imul edx,[col2_4]
+        add edx, [C]
+        movaps [edx+ebx*4],xmm3
+        sub edx, [C]
+        add ebx,4		
+        cmp ebx,[col2]	
+        jb forj			
+        add eax,1			
+        cmp eax,[row]			
+        jb fori			
+        mov eax,[row]
         shr eax,2
-        imul edi,eax,col2;
-        ;printps C,edi
-        mov EAX,C;
+        mov edi, eax
+        imul edi, [col2]
+        mov EAX,[C];
 		; ------------------------------------------------------------
 		; Sequenza di uscita dalla funzione
 		; ------------------------------------------------------------
-
 		pop	edi		; ripristina i registri da preservare
 		pop	esi
 		pop	ebx
