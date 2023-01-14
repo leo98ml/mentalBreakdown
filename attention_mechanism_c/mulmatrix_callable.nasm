@@ -104,7 +104,9 @@ fork:	mov esi, ecx
         sub edi,[A]
         shufps xmm2,xmm2,55h
         add esi,[B]
+        add esi,[col_4]
         movaps xmm1,[esi+ebx*4]
+        sub esi,[col_4]
         sub esi,[B]
         mulps  xmm1,xmm2
         addps xmm5,xmm1
@@ -114,7 +116,11 @@ fork:	mov esi, ecx
         shufps xmm2,xmm2,39h	
         shufps xmm2,xmm2,55h	
         add esi,[B]
+        add esi,[col_4]
+        add esi,[col_4]
         movaps xmm1,[esi+ebx*4]
+        sub esi,[col_4]
+        sub esi,[col_4]
         sub esi,[B]
         mulps  xmm1,xmm2
         addps xmm6,xmm1
@@ -124,7 +130,13 @@ fork:	mov esi, ecx
         shufps xmm2,xmm2,93h	
         shufps xmm2,xmm2,00h	
         add esi,[B]
+        add esi,[col_4]
+        add esi,[col_4]
+        add esi,[col_4]
         movaps xmm1,[esi+ebx*4]
+        sub esi,[col_4]
+        sub esi,[col_4]
+        sub esi,[col_4]
         sub esi,[B]
         mulps  xmm1,xmm2
         addps xmm7,xmm1
@@ -149,11 +161,7 @@ fork:	mov esi, ecx
         jb forj			
         add eax,1			
         cmp eax,[row]			
-        jb fori			
-        mov eax,[row]
-        shr eax,2
-        mov edi, eax
-        imul edi, [col2]
+        jb fori	
         mov EAX,[C];
 		; ------------------------------------------------------------
 		; Sequenza di uscita dalla funzione

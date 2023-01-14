@@ -64,9 +64,9 @@ sum_matrix_vector:
 		MOV EBX, [EAX+4]	
 		MOV [V], EBX		
 		MOV EBX, [EAX+8]	
-		MOV [c], EBX		
+		MOV [r], EBX		
 		MOV EBX, [EAX+12]	
-		MOV [r], EBX			
+		MOV [c], EBX			
 		MOV EBX, [EAX+16]	
 		MOV [D], EBX			
 
@@ -79,28 +79,53 @@ forj:   mov         edi, [c];
         imul 		esi, ebx
         add         esi, [M]
 		movaps		xmm0,[esi+edi]      ;
-		movaps		xmm1,[esi+edi+16]   ;
-		movaps		xmm2,[esi+edi+32]   ;
-		movaps		xmm3,[esi+edi+48]   ;
+		mov			edx, [c]
+		imul        edx, 4
+		add			esi,edx
+		movaps		xmm1,[esi+edi]   ;
+		sub			esi,edx
+		mov			edx, [c]
+		imul        edx, 8
+		add			esi,edx
+		movaps		xmm2,[esi+edi]   ;
+		sub			esi,edx
+		mov			edx, [c]
+		imul        edx, 12
+		add			esi,edx
+		movaps		xmm3,[esi+edi]   ;
+		sub			esi,edx
         sub         esi, [M]
         add         esi, [V]
-		addps		xmm0,[esi]		    ;		
-		addps		xmm1,[esi+16]		;
-		addps		xmm2,[esi+32]		;
-		addps		xmm3,[esi+48]		;
+		movaps		xmm5,[esi]
+		addps		xmm0,xmm5		    ;
+		addps		xmm1,xmm5		;
+		addps		xmm2,xmm5		;
+		addps		xmm3,xmm5		;
         sub         esi, [V]
         add         esi, [D]
 		movaps		[esi+edi], xmm0	;
-		movaps		[esi+edi+16], xmm1	;
-		movaps		[esi+edi+32], xmm2	;
-		movaps		[esi+edi+48], xmm3	;
+		mov			edx, [c]
+		imul        edx, 4
+		add			esi,edx		
+		movaps		[esi+edi], xmm1	;
+		sub			esi,edx
+		mov			edx, [c]
+		imul        edx, 8
+		add			esi,edx
+		movaps		[esi+edi], xmm2	;
+		sub			esi,edx
+		mov			edx, [c]
+		imul        edx, 12
+		add			esi,edx
+		movaps		[esi+edi], xmm3	;
+		sub			esi,edx
         sub         esi, [D]
 		add		    ebx, cost			;
 		cmp 		ebx, [c]			;
-		jl		    forj			;
-		add	    	eax, 1			;
+		jb		    forj			;
+		add	    	eax, 4		;
 		cmp		    eax, [r]		;
-		jl		    fori			;
+		jb		    fori			;
 		; ------------------------------------------------------------
 		; Sequenza di uscita dalla funzione
 		; ------------------------------------------------------------
