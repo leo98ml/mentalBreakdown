@@ -1,0 +1,97 @@
+%include "sseutils32.nasm"
+
+section .data		
+
+	align 32
+	inizio:	dq		1.0, 4.0, 3.0, 5.0
+	
+	align 32
+	inizio1:	dq		5.0, 2.0, 3.0, 4.0	
+	
+	
+	c equ 16
+	r equ 16
+	u equ 8
+	
+section .bss
+
+	alignb 32
+	M resq r*c
+	
+	alignb 32
+	V resq c
+	
+	alignb 32
+	D resq r*c
+	
+	
+	
+
+	
+section .text
+
+	global main
+	main:
+		start
+		
+		; carica la matrice A e il vettore V e azzera la matrice D
+		;
+		vmovapd		ymm0, [inizio]	;
+		vxorpd		ymm2, ymm2	;
+		mov		ebx, 0		;
+		mov		ecx, r*c/4	;
+		
+ciclo:		vmovapd		[M+ebx], ymm0	;
+		vmovapd		[D+ebx], ymm2	;
+		add		ebx, 32	;
+		dec		ecx		;
+		jnz		ciclo		;
+		
+		vmovapd		ymm1, [inizio1]	;
+		mov		ebx,0		;
+		mov		ecx, c/4	;
+ciclo1:	vmovapd		[V+ebx], ymm1	;
+		add		ebx, 32	;
+		dec		ecx		;
+		jnz		ciclo1		;
+
+		
+		
+	
+		
+		
+		
+		mov		eax, 0			; i = 0
+fori:		mov		ebx, 0			; j = 0
+forj:		imul		edi,eax,c*u ;
+		imul 		esi,ebx,u;
+		
+		
+			
+				
+		vmovapd		ymm0,[M+esi+edi]      ;
+		vmovapd		ymm1,[M+esi+edi+c*8]   ;
+		vmovapd		ymm2,[M+esi+edi+c*16]   ;
+		vmovapd		ymm3,[M+esi+edi+c*24];
+		
+		vaddpd		ymm0, [V+esi]		;		
+		vaddpd		ymm1, [V+esi]		;
+		vaddpd		ymm2, [V+esi]		;
+		vaddpd		ymm3, [V+esi]		;
+		
+		vmovapd		[D+esi+edi], ymm0	;
+		vmovapd		[D+esi+edi+c*8], ymm1	;
+		vmovapd		[D+esi+edi+c*16], ymm2	;
+		vmovapd		[D+esi+edi+c*24], ymm3	;
+				
+		
+		add		ebx,4			;
+		cmp 		ebx,c			;
+		jb		forj			;
+		
+		add		eax,4			;
+		cmp		eax,r		;
+		jb		fori		
+			;
+		vprintpd		D,r*c/4;			;
+		stop
