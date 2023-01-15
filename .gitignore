@@ -1,4 +1,3 @@
-attention_mechanism_c/out32_2048_8_64_48.ds2
 attention_mechanism_c/testLeo
 attention_mechanism_c/try-txt
 attention_mechanism_c/try-txt.64
@@ -15,3 +14,6 @@ attention_mechanism_c/sseutils32.o
 attention_mechanism_c/salvatore.txt
 attention_mechanism_c/testSalva
 attention_mechanism_c/sum_vector_matrix_callable.o
+*/*.o
+*/*.exe
+*/*.txt

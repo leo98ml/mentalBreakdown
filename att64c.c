@@ -177,9 +177,9 @@ void save_data(char* filename, void* X, int n, int k) {
 }
 
 // PROCEDURE ASSEMBLY
-//extern MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret );
+extern MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret );
 extern void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest);
-//extern MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, int col, int col2, type scalar, MATRIX ret);
+extern MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, int col, int col2, type scalar, MATRIX ret);
 
 /*
 void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest)
@@ -191,7 +191,7 @@ void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest)
 			dest[i * col + j] = m[i * col + j] + v[j];
 		}
 	}
-}*/
+}
 
 MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret )
 {
@@ -226,7 +226,7 @@ MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, i
 		}
 	}
 	return ret;
-}
+}*/
 void function_f(MATRIX m, int dimension)
 {
 	for (int i = 0; i < dimension; i++)
