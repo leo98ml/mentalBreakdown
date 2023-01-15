@@ -3,7 +3,7 @@
 
 section .data			; Sezione contenente dati inizializzati
 	u equ 4
-	cost equ 16
+	cost equ 4
 
 section .bss			; Sezione contenente dati non inizializzati
     alignb 16

@@ -177,8 +177,10 @@ void save_data(char* filename, void* X, int n, int k) {
 }
 
 // PROCEDURE ASSEMBLY
+//extern MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret );
+//extern void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest);
+extern MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, int col, int col2, type scalar, MATRIX ret);
 
-extern void prova(params* input);
 
 void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest)
 {
@@ -190,6 +192,7 @@ void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest)
 		}
 	}
 }
+
 MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret )
 {
 	// MATRIX ret = alloc_matrix(row, col2);
@@ -206,7 +209,7 @@ MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret )
 	}
 	return ret;
 }
-
+/*
 MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, int col, int col2, type scalar, MATRIX ret)
 {
 	// MATRIX ret = alloc_matrix(row, col2);
@@ -222,8 +225,7 @@ MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, i
 		}
 	}
 	return ret;
-}
-
+}*/
 void function_f(MATRIX m, int dimension)
 {
 	for (int i = 0; i < dimension; i++)
@@ -276,13 +278,12 @@ void att(params *input)
 			sum_matrix_vector(mul_matrix(S_i, input->wq, input->n, input->d, input->nn,Q), input->bq, input->n, input->nn, Q); // n*nn -> dim(Q)
 			sum_matrix_vector(mul_matrix(S_i, input->wk, input->n, input->d, input->nn,K), input->bk, input->n, input->nn, K);
 			sum_matrix_vector(mul_matrix(S_i, input->wv, input->n, input->d, input->nn,V), input->bv, input->n, input->nn, V);
-			MATRIX S_1 = mul_matrix_transpose_and_divide_by_scalar(Q, K, input->n, input->nn, input->n, sqrt_d,tmp);
+			MATRIX S_1 = mul_matrix_transpose_and_divide_by_scalar(Q, K, input->n, input->nn, input->n, 1/sqrt_d,tmp);
 			function_f(S_1, input->n);
 			write_out(input->out, mul_matrix(S_1, V, input->n, input->n, input->nn,Q), input->n, input->nn, i_tensore * input->s * input->n * input->nn + input->n * input->nn * i);
 		}
 	}
 }
-
 int main(int argc, char** argv) {
 
 	char fname[256];
