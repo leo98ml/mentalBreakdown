@@ -11,15 +11,15 @@ section .bss			; Sezione contenente dati non inizializzati
     alignb 16
     C:        resd    1
     alignb 16
-    row:      resd     1
+    row:      resd    1
     alignb 16
-    col:	    resd 	  1
+    col:	  resd 	  1
     alignb 16
-    col2:	 resd	  1
+    col2:	  resd	  1
     alignb 16
-    col_4:	    resd 	  1
+    col_4:	  resd 	  1
     alignb 16
-    col2_4:	 resd	  1
+    col2_4:	  resd	  1
     alignb 16
 
 section .text			; Sezione contenente il codice macchina

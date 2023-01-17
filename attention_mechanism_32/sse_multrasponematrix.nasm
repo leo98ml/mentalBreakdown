@@ -18,6 +18,8 @@ section .bss			; Sezione contenente dati non inizializzati
     d:      resd     1
     alignb 16
     C:      resd     1
+    alignb 16
+    col_4:	  resd 	  1
 
 section .text			; Sezione contenente il codice macchina
 
@@ -74,7 +76,10 @@ mul_matrix_transpose_and_divide_by_scalar:
 		MOV EBX, [EAX+20]
 		MOV [d], EBX			
 		MOV EBX, [EAX+24]	
-		MOV [C], EBX			    
+		MOV [C], EBX
+                mov eax,[col]
+                shl eax,2
+                mov [col_4],eax			    
                 mov 	eax,0			;i=0
         fori:	mov	ebx,0			;j=0
         forj:	
@@ -96,20 +101,23 @@ mul_matrix_transpose_and_divide_by_scalar:
                 haddps xmm1,xmm1
                 haddps xmm1,xmm1
                 addps xmm4,xmm1
-                movaps xmm2,[edi+ecx*4]
-                movaps xmm1,[esi+ecx*4+32]
+                add esi,[col_4]
+                movaps xmm1,[esi+ecx*4]
                 mulps  xmm1,xmm2
                 haddps xmm1,xmm1
                 haddps xmm1,xmm1
                 addps xmm5,xmm1
-                movaps xmm2,[edi+ecx*4]
-                movaps xmm1,[esi+ecx*4+64]
+                add esi,[col_4]
+                movaps xmm1,[esi+ecx*4]
                 mulps  xmm1,xmm2
                 haddps xmm1,xmm1
                 haddps xmm1,xmm1
                 addps xmm6,xmm1
-                movaps xmm2,[edi+ecx*4]
-                movaps xmm1,[esi+ecx*4+96]
+                add esi,[col_4]
+                movaps xmm1,[esi+ecx*4]
+                sub esi,[col_4]
+                sub esi,[col_4]
+                sub esi,[col_4]
                 sub edi,[A]
                 sub esi,[B]
                 mulps  xmm1,xmm2
@@ -135,7 +143,7 @@ mul_matrix_transpose_and_divide_by_scalar:
                 xorps xmm5,xmm5
                 xorps xmm6,xmm6
                 xorps xmm7,xmm7
-                add ebx,1			;
+                add ebx,4			;
                 cmp ebx,[col2]		;
                 jb forj			;
                 add eax,1			;

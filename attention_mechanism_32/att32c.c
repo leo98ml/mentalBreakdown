@@ -189,11 +189,11 @@ void save_data(char *filename, void *X, int n, int k)
 
 // PROCEDURE ASSEMBLY
 
-extern MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret );
-extern void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest);
+// extern MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret );
+// extern void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest);
 extern MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, int col, int col2, type scalar, MATRIX ret);
 
-/*
+/**/
 void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest)
 {
 	for (int i = 0; i < row; i++)
@@ -221,7 +221,7 @@ MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret )
 	}
 	return ret;
 }
-
+/*
 MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, int col, int col2, type scalar, MATRIX ret)
 {
 	// MATRIX ret = alloc_matrix(row, col2);

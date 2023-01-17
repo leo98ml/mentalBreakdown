@@ -56,7 +56,6 @@ mul_matrix_transpose_and_divide_by_scalar:
 		MOV [col], RCX	
 		MOV [col2], R8 	
 		MOVSD [d], XMM0	
-		;MOV r10, [rax]	
 		MOV [C], R9
 
 		mov rax,0			;i=0
@@ -77,7 +76,7 @@ fork    mov rsi, 8
         imul rsi,[col2]
         imul rsi,r10	
         add rdi,[A]
-        add rsi,[B]	
+leo:    add rsi,[B]	
         vmovapd ymm2,[rdi+rcx*8]
         vmovapd ymm1,[rsi+rcx*8]
         vmulpd  ymm1,ymm2
@@ -85,22 +84,28 @@ fork    mov rsi, 8
         vpermq ymm1, ymm1, 0x39
         vhaddpd ymm1,ymm1
         vaddpd ymm4,ymm1
-        vmovapd ymm2,[rdi+rcx*8]
-        vmovapd ymm1,[rsi+rcx*8+64]
+        mov r11, 8
+        imul r11,[col]
+        add r11,rsi
+        vmovapd ymm1,[r11+rcx*8]
         vmulpd ymm1,ymm2
         vhaddpd ymm1,ymm1
         vpermq ymm1, ymm1, 0x39
         vhaddpd ymm1,ymm1
         vaddpd ymm5,ymm1
-        vmovapd ymm2,[rdi+rcx*8]
-        vmovapd ymm1,[rsi+rcx*8+128]
+        mov r11, 16
+        imul r11,[col]
+        add r11,rsi
+        vmovapd ymm1,[r11+rcx*8]
         vmulpd  ymm1,ymm2
         vhaddpd ymm1,ymm1
         vpermq ymm1, ymm1, 0x39
         vhaddpd ymm1,ymm1
         vaddpd ymm6,ymm1
-        vmovapd ymm2,[rdi+rcx*8]
-        vmovapd ymm1,[rsi+rcx*8+192]
+        mov r11, 24
+        imul r11,[col]
+        add r11,rsi
+        vmovapd ymm1,[r11+rcx*8]
         sub rdi,[A]
         sub rsi,[B]
         vmulpd  ymm1,ymm2
@@ -122,7 +127,7 @@ fork    mov rsi, 8
         vmulpd ymm7,ymm3
         movsd [rdx+r10*8+24],xmm7
         sub rdx,[C]
-        add r10,1			;
+        add r10,4			;
         cmp r10,[col2]			;
         jb forj			;
         add rax,1			;
