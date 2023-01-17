@@ -52,18 +52,19 @@ mul_matrix:
 		MOV [C], R9
 
 		
-        mov 	rax,0			;i=0
+        mov rax,0			;i=0
 fori:	mov	r10,0			;j=0
+        mov rsi, 8
+        imul rsi,[col2]
+        imul rsi,rax
+        add rsi, [C]
 forj:	
         mov rdi,8
         imul rdi,[col]
         imul rdi,rax		;
-        vxorpd ymm3,ymm3
+        vxorpd ymm4,ymm4
         mov rcx,0			;k=0
-fork:	mov rsi, 8
-        imul rsi,[col2]
-        imul rsi,rax
- 	    mov rdx,8
+fork:	mov rdx,8
         imul rdx,[col2]
         imul rdx, rcx
         add rdi, [A]
@@ -78,14 +79,14 @@ fork:	mov rsi, 8
         vbroadcastsd ymm2,[rdi+rcx*8+8]
         vmovapd ymm1,[r11+r10*8]
         vmulpd  ymm1,ymm2
-        vaddpd ymm5,ymm1
+        vaddpd ymm4,ymm1
         mov r11, 16
         imul r11,[col]
         add r11,rdx
         vbroadcastsd ymm2,[rdi+rcx*8+16]
         vmovapd ymm1,[r11+r10*8]
         vmulpd  ymm1,ymm2
-        vaddpd ymm6,ymm1
+        vaddpd ymm4,ymm1
         mov r11, 24
         imul r11,[col]
         add r11,rdx
@@ -94,21 +95,11 @@ fork:	mov rsi, 8
         sub rdi, [A]
         sub rdx, [B]
         vmulpd  ymm1,ymm2
-        vaddpd ymm7,ymm1
+        vaddpd ymm4,ymm1
         add rcx,4			;
         cmp rcx,[col]			;
         jb fork			;
-        vaddpd ymm3,ymm4
-        vaddpd ymm3,ymm5
-        vaddpd ymm3,ymm6
-        vaddpd ymm3,ymm7
-        vxorpd ymm4,ymm4
-        vxorpd ymm5,ymm5
-        vxorpd ymm6,ymm6
-        vxorpd ymm7,ymm7
-        add rsi, [C]
-        vmovapd [rsi+r10*8],ymm3
-        sub rsi, [C]
+        vmovapd [rsi+r10*8],ymm4
         add r10,4			;
         cmp r10,[col2]			;
         jb forj			;

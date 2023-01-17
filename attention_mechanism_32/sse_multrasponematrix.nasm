@@ -91,7 +91,7 @@ mul_matrix_transpose_and_divide_by_scalar:
                 imul edx, eax
                 mov ecx,0			;k=0
         fork:	mov esi, 4
-                imul esi,[col2]
+                imul esi,[col]
                 imul esi,ebx		;
                 add edi,[A]
                 add esi,[B]

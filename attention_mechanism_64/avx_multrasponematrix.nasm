@@ -4,19 +4,19 @@ section .data			; Sezione contenente dati inizializzati
 
 section .bss			; Sezione contenente dati non inizializzati
     alignb 32
-    A:        resq    1
+    A:        resq   1
     alignb 32
-    B:        resq    1
+    B:        resq   1
     alignb 32
-    row:        resq    1
+    row:      resq   1
     alignb 32
-    col:      resq     1
+    col:      resq   1
     alignb 32
-    col2:      resq     1
+    col2:     resq   1
     alignb 32
-    d:      resq     1
+    d:        resq   1
     alignb 32
-    C:      resq     1
+    C:        resq   1
 
 section .text			; Sezione contenente il codice macchina
 
@@ -60,39 +60,38 @@ mul_matrix_transpose_and_divide_by_scalar:
 
 		mov rax,0			;i=0
 fori:	mov	r10,0			;j=0
-forj:	
         mov rdi,8
         imul rdi,[col]
         imul rdi,rax
-        vxorpd ymm4,ymm4
-        vxorpd ymm5,ymm5
-        vxorpd ymm6,ymm6
-        vxorpd ymm7,ymm7
         mov rdx,8
         imul rdx,[col2]
         imul rdx, rax
+forj:	vxorpd ymm4,ymm4
+        vxorpd ymm5,ymm5
+        vxorpd ymm6,ymm6
+        vxorpd ymm7,ymm7
+        mov rsi, 8
+        imul rsi,[col]
+        imul rsi,r10
         mov rcx,0			;k=0
-fork    mov rsi, 8
-        imul rsi,[col2]
-        imul rsi,r10	
-        add rdi,[A]
-leo:    add rsi,[B]	
-        vmovapd ymm2,[rdi+rcx*8]
-        vmovapd ymm1,[rsi+rcx*8]
+fork    add rdi,[A]
+        add rsi,[B]	
+        vmovapd ymm2,[rdi+rcx*8]; take 4 elem from A
+        vmovapd ymm1,[rsi+rcx*8]; take 4 elem from B
         vmulpd  ymm1,ymm2
         vhaddpd ymm1,ymm1
         vpermq ymm1, ymm1, 0x39
         vhaddpd ymm1,ymm1
-        vaddpd ymm4,ymm1
+        vaddpd ymm4,ymm1; partial sum for C[i][j]
         mov r11, 8
         imul r11,[col]
         add r11,rsi
-        vmovapd ymm1,[r11+rcx*8]
+        vmovapd ymm1,[r11+rcx*8]; take 4 elem from next row B
         vmulpd ymm1,ymm2
         vhaddpd ymm1,ymm1
         vpermq ymm1, ymm1, 0x39
         vhaddpd ymm1,ymm1
-        vaddpd ymm5,ymm1
+        vaddpd ymm5,ymm1; partial sum for C[i][j+1]
         mov r11, 16
         imul r11,[col]
         add r11,rsi
@@ -101,7 +100,7 @@ leo:    add rsi,[B]
         vhaddpd ymm1,ymm1
         vpermq ymm1, ymm1, 0x39
         vhaddpd ymm1,ymm1
-        vaddpd ymm6,ymm1
+        vaddpd ymm6,ymm1; partial sum for C[i][j+2]
         mov r11, 24
         imul r11,[col]
         add r11,rsi
@@ -112,20 +111,20 @@ leo:    add rsi,[B]
         vhaddpd ymm1,ymm1
         vpermq ymm1, ymm1, 0x39
         vhaddpd ymm1,ymm1
-        vaddpd ymm7,ymm1
+        vaddpd ymm7,ymm1; partial sum for C[i][j+3]
         add rcx,4			;
         cmp rcx,[col]			;
         jb fork			;
         vbroadcastsd ymm3,[d]
         vmulpd ymm4,ymm3
         add rdx,[C]
-        movsd [rdx+r10*8],xmm4
+        vmovsd  [rdx+r10*8],xmm4
         vmulpd ymm5,ymm3
-        movsd [rdx+r10*8+8],xmm5
+        vmovsd  [rdx+r10*8+8],xmm5
         vmulpd ymm6,ymm3
-        movsd [rdx+r10*8+16],xmm6
+        vmovsd  [rdx+r10*8+16],xmm6
         vmulpd ymm7,ymm3
-        movsd [rdx+r10*8+24],xmm7
+        vmovsd [rdx+r10*8+24],xmm7
         sub rdx,[C]
         add r10,4			;
         cmp r10,[col2]			;
