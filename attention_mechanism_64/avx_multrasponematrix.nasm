@@ -20,46 +20,23 @@ section .bss			; Sezione contenente dati non inizializzati
 
 section .text			; Sezione contenente il codice macchina
 
-extern get_block
-extern free_block
-
-%macro	getmem	2
-	mov	rdi, %1
-	mov	rsi, %2
-	call	get_block
-%endmacro
-
-%macro	fremem	1
-	mov	rdi, %1
-	call	free_block
-%endmacro
-
-; ------------------------------------------------------------
-; Funzione 
-; ------------------------------------------------------------
 global mul_matrix_transpose_and_divide_by_scalar
-
-input		equ		16
 
 mul_matrix_transpose_and_divide_by_scalar:
         push		rbp				; salva il Base Pointer
-		mov		rbp, rsp			; il Base Pointer punta al Record di Attivazione corrente
-		pushaq						; salva i registri generali
+        mov		rbp, rsp			; il Base Pointer punta al Record di Attivazione corrente
+        pushaq						; salva i registri generali
+        		
+        MOV [A], RDI		
+        MOV [B], RSI		
+        MOV [row], RDX		
+        MOV [col], RCX	
+        MOV [col2], R8 	
+        MOVSD [d], XMM0	
+        MOV [C], R9
 
-        xor rax, rax
-        xor r10, r10
-        add rax, input
-        add rax, rbp		
-		MOV [A], RDI		
-		MOV [B], RSI		
-		MOV [row], RDX		
-		MOV [col], RCX	
-		MOV [col2], R8 	
-		MOVSD [d], XMM0	
-		MOV [C], R9
-
-		mov rax,0			;i=0
-fori:	mov	r10,0			;j=0
+        mov rax,0			;i=0
+fori:	mov r10,0			;j=0
         mov rdi,8
         imul rdi,[col]
         imul rdi,rax
@@ -133,10 +110,6 @@ fork    add rdi,[A]
         cmp rax,[row]			;
         jb fori			;
         mov rax,[C];
-        
-        ; ------------------------------------------------------------
-        ; Sequenza di uscita dalla funzione
-        ; ------------------------------------------------------------
         
         popaq				; ripristina i registri generali
         mov		rsp, rbp	; ripristina lo Stack Pointer
