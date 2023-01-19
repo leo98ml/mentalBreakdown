@@ -102,14 +102,14 @@ fork:	mov esi, ecx
         addps xmm4,xmm1     ; partial sum in xmm4
         movaps xmm2,[edi+ecx*4]
         shufps xmm2,xmm2,55h; the same thing as before but with seconf element;
-        add esi,[col_4]
+        add esi,[col2_4]
         movaps xmm1,[esi+ebx*4]
         mulps  xmm1,xmm2    ; go on the next row in B
         addps xmm4,xmm1     ; partial sum
         movaps xmm2,[edi+ecx*4] 
         shufps xmm2,xmm2,39h	
         shufps xmm2,xmm2,55h; third element
-        add esi,[col_4]     
+        add esi,[col2_4]     
         movaps xmm1,[esi+ebx*4]; next row on B
         mulps  xmm1,xmm2
         addps xmm4,xmm1
@@ -117,11 +117,11 @@ fork:	mov esi, ecx
         sub edi,[A]
         shufps xmm2,xmm2,93h	
         shufps xmm2,xmm2,00h	
-        add esi,[col_4]
+        add esi,[col2_4]
         movaps xmm1,[esi+ebx*4]; next row on B
-        sub esi,[col_4]
-        sub esi,[col_4]
-        sub esi,[col_4]
+        sub esi,[col2_4]
+        sub esi,[col2_4]
+        sub esi,[col2_4]
         sub esi,[B]
         mulps  xmm1,xmm2
         addps xmm4,xmm1
