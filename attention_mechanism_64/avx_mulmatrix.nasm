@@ -53,21 +53,21 @@ fork:	mov rdx,8
         vmulpd  ymm1,ymm2
         vaddpd ymm4,ymm1
         mov r11, 8
-        imul r11,[col]
+        imul r11,[col2]
         add r11,rdx
         vbroadcastsd ymm2,[rdi+rcx*8+8]
         vmovapd ymm1,[r11+r10*8]
         vmulpd  ymm1,ymm2
         vaddpd ymm4,ymm1
         mov r11, 16
-        imul r11,[col]
+        imul r11,[col2]
         add r11,rdx
         vbroadcastsd ymm2,[rdi+rcx*8+16]
         vmovapd ymm1,[r11+r10*8]
         vmulpd  ymm1,ymm2
         vaddpd ymm4,ymm1
         mov r11, 24
-        imul r11,[col]
+        imul r11,[col2]
         add r11,rdx
         vbroadcastsd ymm2,[rdi+rcx*8+24]
         vmovapd ymm1,[r11+r10*8]
