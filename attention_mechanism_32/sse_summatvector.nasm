@@ -19,44 +19,19 @@ section .bss			; Sezione contenente dati non inizializzati
 
 section .text			; Sezione contenente il codice macchina
 
-extern get_block
-extern free_block
-
-%macro	getmem	2
-	mov	eax, %1
-	push	eax
-	mov	eax, %2
-	push	eax
-	call	get_block
-	add	esp, 8
-%endmacro
-
-%macro	fremem	1
-	push	%1
-	call	free_block
-	add	esp, 4
-%endmacro
-
-; ------------------------------------------------------------
-; Funzioni
-; ------------------------------------------------------------
 global sum_matrix_vector
 
 input		equ		8
 
 sum_matrix_vector:
-		; ------------------------------------------------------------
-		; Sequenza di ingresso nella funzione
-		; ------------------------------------------------------------
+		
 		push		ebp		; salva il Base Pointer
 		mov		ebp, esp	; il Base Pointer punta al Record di Attivazione corrente
 		push		ebx		; salva i registri da preservare
 		push		esi
 		push		edi
-		; ------------------------------------------------------------
-		; legge i parametri dal Record di Attivazione corrente
-		; ------------------------------------------------------------
-        xor eax, eax
+		
+		xor eax, eax
         add eax, input
         add eax,EBP
 		MOV EBX, [EAX]	
@@ -126,13 +101,11 @@ forj:   mov         edi, [c];
 		add	    	eax, 4		;
 		cmp		    eax, [r]		;
 		jb		    fori			;
-		; ------------------------------------------------------------
-		; Sequenza di uscita dalla funzione
-		; ------------------------------------------------------------
+		
 		pop	edi		; ripristina i registri da preservare
 		pop	esi
 		pop	ebx
-		mov	esp, ebp	; ripristina lo Stack Pointer
+		mov	esp, ebp; ripristina lo Stack Pointer
 		pop	ebp		; ripristina il Base Pointer
 		ret			; torna alla funzione C chiamante
 

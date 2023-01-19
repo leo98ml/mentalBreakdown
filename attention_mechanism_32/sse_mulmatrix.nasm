@@ -24,43 +24,17 @@ section .bss			; Sezione contenente dati non inizializzati
 
 section .text			; Sezione contenente il codice macchina
 
-extern get_block
-extern free_block
-
-%macro	getmem	2
-	mov	eax, %1
-	push	eax
-	mov	eax, %2
-	push	eax
-	call	get_block
-	add	esp, 8
-%endmacro
-
-%macro	fremem	1
-	push	%1
-	call	free_block
-	add	esp, 4
-%endmacro
-
-; ------------------------------------------------------------
-; Funzioni
-; ------------------------------------------------------------
-
 global mul_matrix
 
 input		equ		8
 mul_matrix:
-		; ------------------------------------------------------------
-		; Sequenza di ingresso nella funzione
-		; ------------------------------------------------------------
-		push		ebp		; salva il Base Pointer
+		
+        push		ebp		; salva il Base Pointer
 		mov		ebp, esp	; il Base Pointer punta al Record di Attivazione corrente
 		push		ebx		; salva i registri da preservare
 		push		esi
 		push		edi
-		; ------------------------------------------------------------
-		; legge i parametri dal Record di Attivazione corrente
-		; ------------------------------------------------------------
+		
         xor eax, eax
         add eax, input
         add eax,EBP
@@ -82,6 +56,7 @@ mul_matrix:
         mov eax,[col2]
         shl eax,2
         mov [col2_4],eax; setting parameters into variables
+       
         mov eax,0			;i=0
 fori:	mov	ebx,0			;j=0
         mov edx,eax
@@ -136,10 +111,8 @@ fork:	mov esi, ecx
         cmp eax,[row]			
         jb fori	
         mov EAX,[C];
-		; ------------------------------------------------------------
-		; Sequenza di uscita dalla funzione
-		; ------------------------------------------------------------
-		pop	edi		; ripristina i registri da preservare
+		
+        pop	edi		; ripristina i registri da preservare
 		pop	esi
 		pop	ebx
 		mov	esp, ebp	; ripristina lo Stack Pointer

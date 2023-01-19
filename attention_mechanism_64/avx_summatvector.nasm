@@ -16,26 +16,7 @@ section .bss			; Sezione contenente dati non inizializzati
 
 section .text			; Sezione contenente il codice macchina
 
-extern get_block
-extern free_block
-
-%macro	getmem	2
-	mov	rdi, %1
-	mov	rsi, %2
-	call	get_block
-%endmacro
-
-%macro	fremem	1
-	mov	rdi, %1
-	call	free_block
-%endmacro
-
-; ------------------------------------------------------------
-; Funzione 
-; ------------------------------------------------------------
 global sum_matrix_vector
-
-input		equ		16
 
 sum_matrix_vector:
         push		rbp				; salva il Base Pointer
@@ -97,10 +78,7 @@ forj:	mov         rdi,[c]
 		add		rax,4			;
 		cmp		rax,[r]		;
 		jb		fori		
-        ; ------------------------------------------------------------
-        ; Sequenza di uscita dalla funzione
-        ; ------------------------------------------------------------
-        
+  
         popaq				; ripristina i registri generali
         mov		rsp, rbp	; ripristina lo Stack Pointer
         pop		rbp		; ripristina il Base Pointer

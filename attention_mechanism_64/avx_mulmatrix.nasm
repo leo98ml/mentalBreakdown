@@ -4,25 +4,21 @@ section .data			; Sezione contenente dati inizializzati
 
 section .bss			; Sezione contenente dati non inizializzati
     alignb 64
-    A:        resq    1
+    A:        resq   1
     alignb 64
-    B:        resq    1
+    B:        resq   1
     alignb 64
-    row:        resq    1
+    row:      resq   1
     alignb 64
-    col:      resq     1
+    col:      resq   1
     alignb 64
-    col2:      resq     1
+    col2:     resq   1
     alignb 64
-    C:      resq     1
+    C:        resq   1
 
 section .text			; Sezione contenente il codice macchina
 
-; ------------------------------------------------------------
-; Funzione 
-; ------------------------------------------------------------
 global mul_matrix
-
 
 mul_matrix:
         push		rbp				; salva il Base Pointer
@@ -57,21 +53,21 @@ fork:	mov rdx,8
         vmulpd  ymm1,ymm2
         vaddpd ymm4,ymm1
         mov r11, 8
-        imul r11,[col]
+        imul r11,[col2]
         add r11,rdx
         vbroadcastsd ymm2,[rdi+rcx*8+8]
         vmovapd ymm1,[r11+r10*8]
         vmulpd  ymm1,ymm2
         vaddpd ymm4,ymm1
         mov r11, 16
-        imul r11,[col]
+        imul r11,[col2]
         add r11,rdx
         vbroadcastsd ymm2,[rdi+rcx*8+16]
         vmovapd ymm1,[r11+r10*8]
         vmulpd  ymm1,ymm2
         vaddpd ymm4,ymm1
         mov r11, 24
-        imul r11,[col]
+        imul r11,[col2]
         add r11,rdx
         vbroadcastsd ymm2,[rdi+rcx*8+24]
         vmovapd ymm1,[r11+r10*8]
@@ -89,8 +85,8 @@ fork:	mov rdx,8
         add rax,1		
         cmp rax,[row]	        
         jb fori			
-        mov rax,[C];
-
+        mov rax,[C]
+       
         popaq				; ripristina i registri generali
         mov		rsp, rbp	; ripristina lo Stack Pointer
         pop		rbp		; ripristina il Base Pointer
