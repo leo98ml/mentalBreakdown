@@ -3,19 +3,19 @@
 section .data			; Sezione contenente dati inizializzati
 
 section .bss			; Sezione contenente dati non inizializzati
-    alignb 32
+    alignb 64
     A:        resq   1
-    alignb 32
+    alignb 64
     B:        resq   1
-    alignb 32
+    alignb 64
     row:      resq   1
-    alignb 32
+    alignb 64
     col:      resq   1
-    alignb 32
+    alignb 64
     col2:     resq   1
-    alignb 32
+    alignb 64
     d:        resq   1
-    alignb 32
+    alignb 64
     C:        resq   1
 
 section .text			; Sezione contenente il codice macchina

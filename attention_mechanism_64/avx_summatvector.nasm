@@ -3,15 +3,15 @@
 section .data			; Sezione contenente dati inizializzati
 	u equ 8
 section .bss			; Sezione contenente dati non inizializzati
-    alignb 32
+    alignb 64
     M:        resq    1
-    alignb 32
+    alignb 64
     V:        resq    1
-    alignb 32
+    alignb 64
     r:        resq    1
-    alignb 32
+    alignb 64
     c:      resq     1
-    alignb 32
+    alignb 64
     D:      resq     1
 
 section .text			; Sezione contenente il codice macchina
@@ -70,10 +70,11 @@ forj:	mov         rdi,[c]
 		vmovapd		ymm3,[r11+rdi];
         sub         rsi,[M]
         add         rsi,[V]
-		vaddpd		ymm0, [rsi]		;		
-		vaddpd		ymm1, [rsi]		;
-		vaddpd		ymm2, [rsi]		;
-		vaddpd		ymm3, [rsi]		;
+        vmovapd     ymm5, [rsi]	
+		vaddpd		ymm0, ymm5		;		
+		vaddpd		ymm1, ymm5		;
+		vaddpd		ymm2, ymm5		;
+		vaddpd		ymm3, ymm5		;
         sub         rsi,[V]
         add         rsi,[D]
 		vmovapd		[rsi+rdi], ymm0	;

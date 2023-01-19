@@ -6,15 +6,15 @@ section .data			; Sezione contenente dati inizializzati
 	cost equ 4
 
 section .bss			; Sezione contenente dati non inizializzati
-    alignb 16
+    alignb 32
     M:        resd    1
-    alignb 16
+    alignb 32
     V:        resd    1
-    alignb 16
+    alignb 32
     c:        resd    1
-    alignb 16
+    alignb 32
     r:      resd     1
-    alignb 16
+    alignb 32
     D:      resd     1
 
 section .text			; Sezione contenente il codice macchina
