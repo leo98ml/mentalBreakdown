@@ -31,7 +31,7 @@ mul_matrix:
         MOV [col], RCX	
         MOV [col2], R8 
         MOV [C], R9
-
+        
         mov rax,0			;i=0
 fori:	mov r10,0			;j=0
         mov rsi, 8
