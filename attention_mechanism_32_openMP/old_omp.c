@@ -46,6 +46,7 @@
 #include <time.h>
 #include <libgen.h>
 #include <xmmintrin.h>
+#include <omp.h>
 
 #define type float
 #define MATRIX type *
@@ -87,7 +88,7 @@ typedef struct
 
 void *get_block(int size, int elements)
 {
-	return _mm_malloc(elements * size, 32);
+	return _mm_malloc(elements * size, 16);
 }
 
 void free_block(void *p)
@@ -189,6 +190,8 @@ void save_data(char *filename, void *X, int n, int k)
 
 // PROCEDURE ASSEMBLY
 
+extern void prova(params *input);
+
 void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest)
 {
 	for (int i = 0; i < row; i++)
@@ -199,8 +202,6 @@ void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest)
 		}
 	}
 }
-
-
 MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret )
 {
 	// MATRIX ret = alloc_matrix(row, col2);
@@ -217,6 +218,7 @@ MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret )
 	}
 	return ret;
 }
+
 MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, int col, int col2, type scalar, MATRIX ret)
 {
 	// MATRIX ret = alloc_matrix(row, col2);
@@ -274,19 +276,18 @@ void att(params *input)
 	// -------------------------------------------------
 
 	type sqrt_d = sqrtf(input->d);
-	MATRIX Q = alloc_matrix(input->n, input->nn);
-	MATRIX K = alloc_matrix(input->n, input->nn);
-	MATRIX V = alloc_matrix(input->n, input->nn);
-	MATRIX tmp = alloc_matrix(input->n, input->n);
-	for (int i_tensore = 0; i_tensore < input->ns; i_tensore++)
-	{
-		for (int i = 0; i < input->s; i++)
-		{
+	#pragma omp parallel for
+	for (int i_tensore = 0; i_tensore < input->ns; i_tensore++) {   
+		MATRIX Q = alloc_matrix(input->n, input->nn);
+		MATRIX K = alloc_matrix(input->n, input->nn);
+		MATRIX V = alloc_matrix(input->n, input->nn);
+		MATRIX tmp = alloc_matrix(input->n, input->n);
+		for (int i = 0; i < input->s; i++) { 
 			MATRIX S_i = &(input->ds[i_tensore * input->s * input->n * input->d + input->n * input->d * i]);//S_i has dimension n*d
 			sum_matrix_vector(mul_matrix(S_i, input->wq, input->n, input->d, input->nn,Q), input->bq, input->n, input->nn, Q); // n*nn -> dim(Q)
 			sum_matrix_vector(mul_matrix(S_i, input->wk, input->n, input->d, input->nn,K), input->bk, input->n, input->nn, K);
 			sum_matrix_vector(mul_matrix(S_i, input->wv, input->n, input->d, input->nn,V), input->bv, input->n, input->nn, V);
-			MATRIX S_1 = mul_matrix_transpose_and_divide_by_scalar(Q, K, input->n, input->nn, input->n, 1/sqrt_d,tmp);
+			MATRIX S_1 = mul_matrix_transpose_and_divide_by_scalar(Q, K, input->n, input->nn, input->n, sqrt_d,tmp);
 			function_f(S_1, input->n);
 			write_out(input->out, mul_matrix(S_1, V, input->n, input->n, input->nn,Q), input->n, input->nn, i_tensore * input->s * input->n * input->nn + input->n * input->nn * i);
 		}
@@ -613,7 +614,7 @@ int main(int argc, char **argv)
 	}
 
 	// COMMENTARE QUESTA RIGA!
-	//prova(input);
+	// prova(input);
 	//
 
 	//
@@ -656,9 +657,8 @@ int main(int argc, char **argv)
 	MATRIX m = load_data("test_2048_48_32.os", &a, &b);
 	
 	type differenza_media = compare(input->out, m, input->N, input->nn);
-	if (input->display){
+	if (input->display)
 		printf("\nDone. Differenza media -> %f\n",differenza_media);
-	}
 	if (input->display)
 	{
 		for (int i = 0; i < a; i++)

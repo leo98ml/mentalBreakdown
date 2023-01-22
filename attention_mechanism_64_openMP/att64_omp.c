@@ -86,7 +86,7 @@ typedef struct {
 */
 
 void* get_block(int size, int elements) { 
-	return _mm_malloc(elements*size,32); 
+	return _mm_malloc(elements*size,64); 
 }
 
 void free_block(void* p) { 
@@ -178,8 +178,10 @@ void save_data(char* filename, void* X, int n, int k) {
 }
 
 // PROCEDURE ASSEMBLY
+// extern MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret );
+// extern void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest);
+// extern MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, int col, int col2, type scalar, MATRIX ret);
 
-extern void prova(params* input);
 
 void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest)
 {
@@ -191,6 +193,7 @@ void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest)
 		}
 	}
 }
+
 MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret )
 {
 	// MATRIX ret = alloc_matrix(row, col2);
@@ -207,6 +210,7 @@ MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret )
 	}
 	return ret;
 }
+
 
 MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, int col, int col2, type scalar, MATRIX ret)
 {
@@ -235,7 +239,7 @@ void function_f(MATRIX m, int dimension)
 			type s = 1;
 			if (x < 0)
 				s = -1;
-			m[i * dimension + j] = s*( 0.5f-(1.0f) / (x + 2.0f)) + 0.5f;
+			m[i * dimension + j] = s*( 0.5-(1.0) / (x + 2.0)) + 0.5;
 		}
 	}
 }
@@ -263,42 +267,31 @@ void att(params *input)
 	// -------------------------------------------------
 	// Codificare qui l'algoritmo Attention mechanism
 	// -------------------------------------------------
-
 	type sqrt_d = sqrt(input->d);
-	
-	for (int i_tensore = 0; i_tensore < input->ns; i_tensore++)
-	{   
-        int range,from,to;
-        omp_set_num_threads(input->s);
-        int n_thread = omp_get_max_threads();
-        if (n_thread>input->s)n_thread=input->s;
-        #pragma omp parallel private(range,from,to)
-        {
-            range = input->s / omp_get_max_threads();
-            if (range == 0) range =1;
-            from = omp_get_thread_num()*range;
-            to = from + range;
-            if (omp_get_num_threads() == omp_get_thread_num()) to = input->s;
-            // printf ("IL THREAD_%d con range: %d, da %d a %d num max thread: %d\n",omp_get_thread_num(),range,from,to,omp_get_max_threads());
-            for (int i = from; i < to; i++)
-            {   
-                MATRIX Q = alloc_matrix(input->n, input->nn);
-                MATRIX K = alloc_matrix(input->n, input->nn);
-                MATRIX V = alloc_matrix(input->n, input->nn);
-                MATRIX tmp = alloc_matrix(input->n, input->n);
-                MATRIX S_i = &(input->ds[i_tensore * input->s * input->n * input->d + input->n * input->d * i]);//S_i has dimension n*d
-                sum_matrix_vector(mul_matrix(S_i, input->wq, input->n, input->d, input->nn,Q), input->bq, input->n, input->nn, Q); // n*nn -> dim(Q)
-                sum_matrix_vector(mul_matrix(S_i, input->wk, input->n, input->d, input->nn,K), input->bk, input->n, input->nn, K);
-                sum_matrix_vector(mul_matrix(S_i, input->wv, input->n, input->d, input->nn,V), input->bv, input->n, input->nn, V);
-                MATRIX S_1 = mul_matrix_transpose_and_divide_by_scalar(Q, K, input->n, input->nn, input->n, sqrt_d,tmp);
-                function_f(S_1, input->n);
-                write_out(input->out, mul_matrix(S_1, V, input->n, input->n, input->nn,Q), input->n, input->nn, i_tensore * input->s * input->n * input->nn + input->n * input->nn * i);
-            }
-        #pragma omp barrier
-        }
+	#pragma omp parallel for
+	for (int i_tensore = 0; i_tensore < input->ns; i_tensore++) 
+	{
+		MATRIX Q = alloc_matrix(input->n, input->nn);
+		MATRIX K = alloc_matrix(input->n, input->nn);
+		MATRIX V = alloc_matrix(input->n, input->nn);
+		MATRIX tmp = alloc_matrix(input->n, input->n);
+		for (int i = 0; i < input->s; i++)
+		{
+			MATRIX S_i = &(input->ds[i_tensore * input->s * input->n * input->d + input->n * input->d * i]);//S_i has dimension n*d
+			mul_matrix(S_i, input->wq, input->n, input->d, input->nn,Q);
+			sum_matrix_vector(Q, input->bq, input->n, input->nn, Q); // n*nn -> dim(Q)
+			mul_matrix(S_i, input->wk, input->n, input->d, input->nn,K);
+			sum_matrix_vector(K, input->bk, input->n, input->nn, K);
+			mul_matrix(S_i, input->wv, input->n, input->d, input->nn,V);
+			sum_matrix_vector(V, input->bv, input->n, input->nn, V);
+			mul_matrix_transpose_and_divide_by_scalar(Q, K, input->n, input->nn, input->n, 1/sqrt_d,tmp);
+			MATRIX S_1 = tmp;
+			function_f(S_1, input->n);
+			mul_matrix(S_1, V, input->n, input->n, input->nn,Q);
+			write_out(input->out, Q, input->n, input->nn, i_tensore * input->s * input->n * input->nn + input->n * input->nn * i);
+		}
 	}
 }
-
 int main(int argc, char** argv) {
 
 	char fname[256];
@@ -588,7 +581,7 @@ int main(int argc, char** argv) {
 	//
 	// Salva il risultato
 	//
-	sprintf(fname, "out32_%d_%d_%d_%d.ds2", input->N, input->s, input->n, input->d);
+	sprintf(fname, "out64_%d_%d_%d_%d.ds2", input->N, input->s, input->n, input->d);
 	save_data(fname, input->out, input->N, input->nn);
 	if(input->display){
 		if(input->out == NULL)
