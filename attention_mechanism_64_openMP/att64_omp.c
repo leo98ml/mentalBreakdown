@@ -178,56 +178,56 @@ void save_data(char* filename, void* X, int n, int k) {
 }
 
 // PROCEDURE ASSEMBLY
-// extern MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret );
-// extern void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest);
-// extern MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, int col, int col2, type scalar, MATRIX ret);
+extern MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret );
+extern void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest);
+extern MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, int col, int col2, type scalar, MATRIX ret);
 
 
-void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest)
-{
-	for (int i = 0; i < row; i++)
-	{
-		for (int j = 0; j < col; j++)
-		{
-			dest[i * col + j] = m[i * col + j] + v[j];
-		}
-	}
-}
+// void sum_matrix_vector(MATRIX m, VECTOR v, int row, int col, MATRIX dest)
+// {
+// 	for (int i = 0; i < row; i++)
+// 	{
+// 		for (int j = 0; j < col; j++)
+// 		{
+// 			dest[i * col + j] = m[i * col + j] + v[j];
+// 		}
+// 	}
+// }
 
-MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret )
-{
-	// MATRIX ret = alloc_matrix(row, col2);
-	for (int i = 0; i < row; i++)
-	{
-		for (int j = 0; j < col2; j++)
-		{
-			ret[i * col2 + j] = 0;
-			for (int k = 0; k < col; k++)
-			{
-				ret[i * col2 + j] += (m[i * col + k] * m2[k * col2 + j]);
-			}
-		}
-	}
-	return ret;
-}
+// MATRIX mul_matrix(MATRIX m, MATRIX m2, int row, int col, int col2, MATRIX ret )
+// {
+// 	// MATRIX ret = alloc_matrix(row, col2);
+// 	for (int i = 0; i < row; i++)
+// 	{
+// 		for (int j = 0; j < col2; j++)
+// 		{
+// 			ret[i * col2 + j] = 0;
+// 			for (int k = 0; k < col; k++)
+// 			{
+// 				ret[i * col2 + j] += (m[i * col + k] * m2[k * col2 + j]);
+// 			}
+// 		}
+// 	}
+// 	return ret;
+// }
 
 
-MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, int col, int col2, type scalar, MATRIX ret)
-{
-	// MATRIX ret = alloc_matrix(row, col2);
-	for (int i = 0; i < row; i++)
-	{
-		for (int j = 0; j < col2; j++)
-		{
-			ret[i * col2 + j] = 0;
-			for (int k = 0; k < col; k++)
-			{
-				ret[i * col2 + j] += (type)(m[i * col + k] * m2[j * col2 + k] / scalar);
-			}
-		}
-	}
-	return ret;
-}
+// MATRIX mul_matrix_transpose_and_divide_by_scalar(MATRIX m, MATRIX m2, int row, int col, int col2, type scalar, MATRIX ret)
+// {
+// 	// MATRIX ret = alloc_matrix(row, col2);
+// 	for (int i = 0; i < row; i++)
+// 	{
+// 		for (int j = 0; j < col2; j++)
+// 		{
+// 			ret[i * col2 + j] = 0;
+// 			for (int k = 0; k < col; k++)
+// 			{
+// 				ret[i * col2 + j] += (type)(m[i * col + k] * m2[j * col2 + k] / scalar);
+// 			}
+// 		}
+// 	}
+// 	return ret;
+// }
 
 void function_f(MATRIX m, int dimension)
 {
@@ -267,9 +267,11 @@ void att(params *input)
 	// -------------------------------------------------
 	// Codificare qui l'algoritmo Attention mechanism
 	// -------------------------------------------------
+
 	type sqrt_d = sqrt(input->d);
+	
 	#pragma omp parallel for
-	for (int i_tensore = 0; i_tensore < input->ns; i_tensore++) 
+	for (int i_tensore = 0; i_tensore < input->ns; i_tensore++)
 	{
 		MATRIX Q = alloc_matrix(input->n, input->nn);
 		MATRIX K = alloc_matrix(input->n, input->nn);
