@@ -88,7 +88,7 @@ typedef struct
 
 void *get_block(int size, int elements)
 {
-	return _mm_malloc(elements * size, 32);
+	return _mm_malloc(elements * size, 16);
 }
 
 void free_block(void *p)
@@ -280,7 +280,7 @@ void att(params *input)
 	// -------------------------------------------------
 
 	type sqrt_d = sqrtf(input->d);
-	#pragma omp parallel for
+	#pragma parallel for num_threads(input->ns)
 	for (int i_tensore = 0; i_tensore < input->ns; i_tensore++)
 	{
 		MATRIX Q = alloc_matrix(input->n, input->nn);
@@ -288,7 +288,7 @@ void att(params *input)
 		MATRIX V = alloc_matrix(input->n, input->nn);
 		MATRIX tmp = alloc_matrix(input->n, input->n);
 		for (int i = 0; i < input->s; i++)
-		{
+		{	
 			MATRIX S_i = &(input->ds[i_tensore * input->s * input->n * input->d + input->n * input->d * i]);//S_i has dimension n*d
 			sum_matrix_vector(mul_matrix(S_i, input->wq, input->n, input->d, input->nn,Q), input->bq, input->n, input->nn, Q); // n*nn -> dim(Q)
 			sum_matrix_vector(mul_matrix(S_i, input->wk, input->n, input->d, input->nn,K), input->bk, input->n, input->nn, K);
@@ -640,7 +640,7 @@ int main(int argc, char **argv)
 	//
 	// Salva il risultato
 	//
-	sprintf(fname, "out32_%d_%d_%d_%d.ds2", input->N, input->s, input->n, input->d);
+	sprintf(fname, "out32omp_%d_%d_%d_%d.ds2", input->N, input->s, input->n, input->d);
 	save_data(fname, input->out, input->N, input->nn);
 	if (input->display)
 	{
@@ -659,25 +659,25 @@ int main(int argc, char **argv)
 			printf("]\n");
 		}
 	}
-	int a, b;
-	MATRIX m = load_data("test_2048_48_32.os", &a, &b);
+	// int a, b;
+	// MATRIX m = load_data("test_2048_48_32.os", &a, &b);
 	
-	type differenza_media = compare(input->out, m, input->N, input->nn);
-	if (input->display){
-		printf("\nDone. Differenza media -> %f\n",differenza_media);
-	}
-	if (input->display)
-	{
-		for (int i = 0; i < a; i++)
-		{
-			int j = 0;
-			for (j = 0; j < b - 1; j++)
-				printf("%f,", m[b * i + j]);
-			printf("%f\n", m[b * i + j]);
-		}
-	}
-	if (!input->silent)
-		printf("\nDone.\n");
+	// type differenza_media = compare(input->out, m, input->N, input->nn);
+	// if (input->display){
+	// 	printf("\nDone. Differenza media -> %f\n",differenza_media);
+	// }
+	// if (input->display)
+	// {
+	// 	for (int i = 0; i < a; i++)
+	// 	{
+	// 		int j = 0;
+	// 		for (j = 0; j < b - 1; j++)
+	// 			printf("%f,", m[b * i + j]);
+	// 		printf("%f\n", m[b * i + j]);
+	// 	}
+	// }
+	// if (!input->silent)
+	// 	printf("\nDone.\n");
 
 	return 0;
 }

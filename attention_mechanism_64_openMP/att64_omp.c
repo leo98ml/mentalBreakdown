@@ -86,7 +86,7 @@ typedef struct {
 */
 
 void* get_block(int size, int elements) { 
-	return _mm_malloc(elements*size,64); 
+	return _mm_malloc(elements*size,32); 
 }
 
 void free_block(void* p) { 
@@ -262,6 +262,7 @@ type compare(MATRIX m1, MATRIX m2, int r, int c){//?
 	}
 	return ret;
 }
+
 void att(params *input)
 {
 	// -------------------------------------------------
@@ -270,7 +271,7 @@ void att(params *input)
 
 	type sqrt_d = sqrt(input->d);
 	
-	#pragma omp parallel for
+	#pragma parallel for num_threads(input->ns)
 	for (int i_tensore = 0; i_tensore < input->ns; i_tensore++)
 	{
 		MATRIX Q = alloc_matrix(input->n, input->nn);
@@ -583,7 +584,7 @@ int main(int argc, char** argv) {
 	//
 	// Salva il risultato
 	//
-	sprintf(fname, "out64_%d_%d_%d_%d.ds2", input->N, input->s, input->n, input->d);
+	sprintf(fname, "out64omp_%d_%d_%d_%d.ds2", input->N, input->s, input->n, input->d);
 	save_data(fname, input->out, input->N, input->nn);
 	if(input->display){
 		if(input->out == NULL)
@@ -599,25 +600,25 @@ int main(int argc, char** argv) {
 			printf("]\n");
 		}
 	}
-	int a,b;
-	MATRIX m=load_data("test_2048_48_64.os", &a, &b);
+	// int a,b;
+	// MATRIX m=load_data("test_2048_48_64.os", &a, &b);
 
 
 	
-	type differenza_media = compare(input->out, m, input->N, input->nn);
-	if (input->display)
-		printf("\nDone. Differenza media -> %f\n",differenza_media);
-	if(input->display){
-		for(int i=0; i<a; i++){
-			int j=0;
-			for(j=0; j<b-1; j++)
-				printf("%f,", m[b*i+j]);
-			printf("%f\n", m[b*i+j]);
-		}
-	}
+	// type differenza_media = compare(input->out, m, input->N, input->nn);
+	// if (input->display)
+	// 	printf("\nDone. Differenza media -> %f\n",differenza_media);
+	// if(input->display){
+	// 	for(int i=0; i<a; i++){
+	// 		int j=0;
+	// 		for(j=0; j<b-1; j++)
+	// 			printf("%f,", m[b*i+j]);
+	// 		printf("%f\n", m[b*i+j]);
+	// 	}
+	// }
 
-	if(!input->silent)
-		printf("\nDone.\n");
+	// if(!input->silent)
+	// 	printf("\nDone.\n");
 
 	return 0;
 }
